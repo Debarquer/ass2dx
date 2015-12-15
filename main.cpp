@@ -45,6 +45,10 @@ float rotAngle = 0.0f;
 ID3D11ShaderResourceView* gTextureView = nullptr;
 ID3D11Texture2D *pTexture = nullptr;
 
+float cameraX = 0;
+float cameraY = 0;
+float cameraZ = -2;
+
 struct CBuffers
 {
 	Matrix world;
@@ -232,7 +236,7 @@ void Render()
 	gDeviceContext->PSSetShaderResources(0, 1, &gTextureView);
 
 	cBuffers.world = Matrix::CreateRotationY(rotAngle);
-	cBuffers.view = Matrix::CreateLookAt(Vector3(0.0f, 0.0f, -2.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	cBuffers.view = Matrix::CreateLookAt(Vector3(cameraX, cameraY, cameraZ), Vector3(cameraX, cameraY, cameraZ + 1), Vector3(0.0f, 1.0f, 0.0f));
 	cBuffers.projection = Matrix::CreatePerspectiveFieldOfView(3.14f * 0.45f, 640.0f / 480.0f, 0.5f, 20.0f);
 
 	rotAngle -= 0.0005f;
@@ -345,6 +349,29 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam 
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;		
+	case WM_KEYDOWN:
+		switch (wParam)
+		{
+		case VK_LEFT:
+			cameraX++;
+			break;
+		case VK_RIGHT:
+			cameraX--;
+			break;
+		case VK_UP:
+			cameraZ++;
+			break;
+		case VK_DOWN:
+			cameraZ--;
+			break;
+		case VK_SPACE:
+			cameraY++;
+			break;
+		case VK_SHIFT:
+			cameraY--;
+			break;
+		}
+		break;
 	}
 
 	return DefWindowProc(hWnd, message, wParam, lParam);
